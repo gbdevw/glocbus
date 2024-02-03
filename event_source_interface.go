@@ -3,7 +3,7 @@ package glocbus
 import (
 	"context"
 
-	cloudevents "github.com/cloudevents/sdk-go"
+	"github.com/cloudevents/sdk-go/v2/event"
 )
 
 // Interface for an event source.
@@ -24,7 +24,7 @@ type EventSourceInterface interface {
 	// # Return
 	//
 	// The channel used by this source to publish its events.
-	GetChannel() chan cloudevents.Event
+	GetChannel() chan event.Event
 	// # Description
 	//
 	// Start the event source that will start publishing events on its publication channel.
@@ -32,7 +32,7 @@ type EventSourceInterface interface {
 	// # Implementation requirements & hints
 	//
 	//	- The method must return an error if the source has already been started.
-	//	- The method must return an error if the provided context has been canceled.
+	//	- The method must return an error if the provided context has been canceled or has expired.
 	//	- The method must return an error if the source has been stopped (no restart).
 	//	- The method must close the publication channel.
 	//
