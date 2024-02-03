@@ -369,6 +369,8 @@ func propagateEvents(
 			// Exit is not caused by write on closed dest channel
 			// close destination channel
 			close(dest)
+		} else {
+			logger.Printf("[PROPAGATOR][%s][%d][%s]: destination channel has been closed by the subscriber. Exiting", sourceId, id, name)
 		}
 		// Notify unsubscribe event
 		unsubscribe <- id
