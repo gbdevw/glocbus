@@ -3,7 +3,7 @@ package glocbus
 import (
 	"context"
 
-	cloudevents "github.com/cloudevents/sdk-go"
+	"github.com/cloudevents/sdk-go/v2/event"
 	"github.com/gbdevw/glocbus/propagators"
 )
 
@@ -21,7 +21,9 @@ type EventSourceInformation struct {
 	// OPtional, user defined additional information about the event source.
 	Description EventSourceDescription
 	// Internal channel used to push new subscribers to propagator
-	newSubscribers chan chan cloudevents.Event
+	newSubscribers chan propagators.Subscription
+	// Internal channel used to receive the outcome of the subscription (nil or error)
+	confirmations chan error
 }
 
 // Interface for an event bus that coordinates event sources, event propagators and subscribers.
@@ -62,32 +64,35 @@ type EventBusInterface interface {
 	//
 	// # Implementation requirements & hints
 	//
-	//	- The channel used to push new subscribers to propagator can be closed by the propagator
-	//    when it is stopped or when the event source is stopped. The event bus must handle the
-	//    case when it writes to a closed channel. In this case, the event source must be removed
-	//    from the list of event sources and an error must be returned to subscriber.
+	//   - The channel used to push new subscribers to propagator can be closed by the propagator
+	//     when it is stopped or when the event source is stopped. The event bus must handle the
+	//     case when it writes to a closed channel. In this case, the event source must be removed
+	//     from the list of event sources and an error must be returned to subscriber.
 	//
-	//	- The choice to use blocking or non-blocking write to propagate events is left to the
-	//    propagator. The same thing applies to scaling: It is up to the propagator implementation
-	//    to make clear statements about how it scales, handles congestion, ...
+	//   - The choice to use blocking or non-blocking write to propagate events is left to the
+	//     propagator. The same thing applies to scaling: It is up to the propagator implementation
+	//     to make clear statements about how it scales, handles congestion, ...
 	//
 	// # Inputs
 	//
-	//	- ctx: Context used for tracing purpose.
-	//	- id: ID of the event source
-	//	- name: Name defined by the subscriber to identify itself. It is not required to be unique.
-	//	- subscriber: Channel provided by the subscriber to receive events from the source.
+	//   - ctx: Context used for stracing purpose.
+	//   - id: ID of the event source
+	//   - name: Name defined by the subscriber to identify itself. It is not required to be unique.
+	//   - subscriber: Channel provided by the subscriber to receive events from the source.
 	//
 	// # Return
 	//
 	// An error when subscription failed. Possible causes are:
-	//	- The event source does not exist or has been removed (missing ID).
-	//	- The propagator has closed the channel to receive new subscriptions.
+	//   - The event source does not exist
+	//   - The event source has been closed.
+	//   - The provided context has expired before subscription is complete.
+	//
+	// In the two later case, the method will close the provided channel.
 	SubscribeEventSource(
 		ctx context.Context,
 		id string,
 		name string,
-		subscriber chan cloudevents.Event,
+		subscriber chan event.Event,
 	) error
 	// # Description
 	//
