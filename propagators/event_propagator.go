@@ -367,15 +367,17 @@ func propagateEvents(
 			(*currSpan).SetStatus(codes.Ok, codes.Ok.String())
 			(*currSpan).End()
 		}
+		// Notify unsubscribe event
+		unsubscribe <- id
 		if recover() == nil {
-			// Exit is not caused by write on closed dest channel
-			// close destination channel
+			// Exit is not caused by write on closed dest channel close destination channel.
+			// Defer a function that will ignore panic that can be caused if the channel is closed
+			// a seocnd time. Propagator must ensure it is closed.
+			defer func() { recover() }()
 			close(dest)
 		} else {
 			logger.Printf("[PROPAGATOR][%s][%d][%s]: destination channel has been closed by the subscriber. Exiting", sourceId, id, name)
 		}
-		// Notify unsubscribe event
-		unsubscribe <- id
 	}()
 	// Continuously propagate events
 	for {
