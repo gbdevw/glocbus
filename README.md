@@ -6,7 +6,7 @@ Glocbus is an event bus and a framework to publish events within a Golang applic
 
 ## Project status
 
-This is an alpha release: The event bus can be used but its API is not stable yet and more test and documentation must be produced before generating a first stable release.
+This is an alpha release: The event bus can be used but its API is not stable yet and more test and documentation must be produced before generating a first stable release. Do not hesistate to file an issue (questions, feedback, ...).
 
 ## Run the demo
 
