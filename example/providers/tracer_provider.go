@@ -12,7 +12,11 @@ import (
 
 func ProvideTraceProvider(lc fx.Lifecycle) (trace.TracerProvider, error) {
 	// Create tracer provider
-	exp, err := otlptracegrpc.New(context.Background())
+	exp, err := otlptracegrpc.New(
+		context.Background(),
+		otlptracegrpc.WithInsecure(),
+		otlptracegrpc.WithEndpoint("jaeger:4317"), // Force to jaeger for use in dockercompose
+	)
 	if err != nil {
 		return nil, err
 	}
