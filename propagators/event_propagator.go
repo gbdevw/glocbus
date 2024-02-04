@@ -309,6 +309,8 @@ func (propagator *EventPropagator) runPropagator(pctx context.Context) {
 				select {
 				case subscriber.Subscriber <- ce:
 					// Loop to next susbcriber
+					espan.SetStatus(codes.Ok, codes.Ok.String())
+					espan.End()
 					continue
 				default:
 					// Discard event - record error and close event's span
