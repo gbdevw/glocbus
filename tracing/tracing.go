@@ -10,7 +10,7 @@ import (
 // Constants using by tracing
 const (
 	PackageName    = "eu.lake42.glocbus"
-	PackageVersion = "0.0.0"
+	PackageVersion = "1.0.0"
 )
 
 // Helper function used to trace and return the provided error.
