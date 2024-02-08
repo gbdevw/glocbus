@@ -4,10 +4,6 @@ Glocbus is an event bus and a framework to publish events within a Golang applic
 
 ![image](./documentation/monitoring.png)
 
-## Project status
-
-This is an alpha release: The event bus can be used but its API is not stable yet and more test and documentation must be produced before generating a first stable release. Do not hesistate to file an issue (questions, feedback, ...).
-
 ## Run the demo
 
 An example of an application that uses Glocbus to publish and consume heartbeat events can be found under the example folder.
